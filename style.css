@@ -1,0 +1,32 @@
+.option{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    flex-direction: column;
+    
+}
+
+.option p {
+    font-size: 4rem;
+}
+
+.optionoption{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 4rem;
+}
+
+.optionoption a{
+    color: black;
+    font-size: 3rem;
+    text-decoration: none;
+    border: 1px solid black;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+
+.optionoption a:hover{
+    color: rgba(0, 0, 0, 0.747);
+}

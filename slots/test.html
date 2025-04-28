@@ -1,0 +1,43 @@
+<div class="slot-machine">
+  <div class="slot-items">
+    <div>🍒</div>
+    <div>🍋</div>
+    <div>🔔</div>
+    <div>🍀</div>
+    <div>🍒</div> <!-- repeat start for smooth loop -->
+  </div>
+</div>
+
+<style>
+  .slot-machine {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  border: 2px solid black;
+  position: relative;
+}
+
+.slot-items {
+  display: flex;
+  flex-direction: column;
+  animation: spin 2s ease-in-out;
+}
+
+.slot-items div {
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-400px); /* Move up by total height of 4 items */
+  }
+}
+
+</style>

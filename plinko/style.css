@@ -1,0 +1,134 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    /* background-color: #f0f0f0; */
+  }
+  #weiner{
+    z-index: 10;
+    opacity: 0;
+    text-align: center;
+    transition: 1s;
+  }
+
+  #loser{
+    z-index: 10;
+    opacity: 0;
+    text-align: center;
+    transition: 1s;
+  }
+
+  #plinko-Game{
+    z-index: 1;
+    text-align: center;
+    transition: 10s;
+    display: none;
+  }
+  
+  #plinko-board {
+    position: relative;
+    width: 300px;
+    height: 500px;
+    /* border: 4px solid #000; */
+    border: 2px solid black;
+    /* background-color: #fff; */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  
+  #pegs {
+    position: absolute;
+    width: 100%;
+    height: 80%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 10px;
+    justify-items: center;
+  }
+  
+  .peg {
+    width: 10px;
+    height: 10px;
+    background-color: #000;
+    border-radius: 50%;
+    position: absolute;
+  }
+  
+  #bins {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 20%;
+    display: flex;
+    justify-content: space-evenly;
+  }
+  
+  .bin {
+    width: 50%;
+    height: 100%;
+    background-color: transparent;
+    border: 1px solid #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .ball {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background-image: url(./check.png);
+    background-size: cover;
+    /* background-color: red; */
+    border-radius: 50%;
+    transform-origin: center;
+  }
+  
+
+  .head{
+    transition: 1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+
+  .outterbox{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
+  .box{
+    width: 75px;
+    height: 75px;
+    border-radius: 1rem;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: red; */
+  }
+
+  .box img {
+    width: 50px;
+    height: 50px;
+    opacity: 0;
+    transition: .3s;
+
+  }
+
+  .innerBox{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
