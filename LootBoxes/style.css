@@ -1,0 +1,271 @@
+*{
+    margin: 0;
+}
+body{
+    overflow-x: hidden;
+}
+
+.outtest{
+    height: 100vh;
+    width: 100%;
+    overflow-y: hidden;
+}
+
+#Bag{
+    flex-wrap: wrap;
+    border: 1px solid black;
+    width: 95%;
+    border-radius: 10px;
+    height: 35vh;
+    overflow-y: scroll;
+    display: flex;
+
+}
+
+.bagItem{
+    border-radius: 10px;
+    width: 10rem;
+    height: 15vh;
+    /* background-color: rgb(161, 161, 161); */
+    display: flex;
+    color: white;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+    transition: 1s;
+}
+
+.bagItem:hover{
+    background-color: rgb(206, 206, 206);
+}
+.bagItem p {
+    z-index: 130;
+    position: relative;
+    bottom: -20px;
+    font-size: 10px;
+    color: black;
+    display: none;
+}
+
+.outterpurse{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.otterInnerPurse{
+    gap: 2%;
+  width: 50%;
+  display: flex;
+  flex-direction: row;
+}
+
+/* .bagItem p {
+    z-index: 130;
+    position: relative;
+    bottom: -20px;
+    font-size: 10px;
+    color: black;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease;
+} */
+
+
+.bagItem img{
+    width: 40%;
+    height: auto;
+}
+.outerBag{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 2rem;
+}
+
+.boxes{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    gap: 10px;
+}
+.boxes div {
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    transition: 1s;
+}
+.boxes div:hover {
+    background-color: rgb(233, 233, 233);
+    border-radius: 5px;
+}
+
+#AddtoBag {
+    padding-top: 30px;
+    width: 100%;
+    height: 100px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: relative; /* Ensure it's positioned relative to its container */
+    z-index: 10; /* Just in case other elements overlap */
+}
+
+#AddtoBag button {
+    margin: 0 auto;
+    display: block;
+}
+
+
+
+.spinnerIteam {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* width: 20rem;
+    height: 16rem; */
+    width: 20rem;
+    height: 25vh;
+    background-color: black;
+    display: flex;
+    color: white;
+    flex-direction: column;
+}
+#whiteTriangle{
+    /* display: none; */
+    z-index: 10;
+    position: absolute;
+    right: 48%;
+    /* width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 30px solid white; */
+    width: 5px;
+    opacity: 0.5;
+    height: 25.5vh;
+    background-color: gold;
+}
+.spinnerOutter{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+#body{
+    height: 100vh;
+    width: 100%;
+    /* background-color: black; */
+    position: absolute;
+    opacity: 0.4;
+    display: none;
+    background-color: black;
+}
+
+
+.slideDown{
+    animation: slideY .5s ease-in forwards;
+}
+
+@keyframes slideY {
+    0%{
+        transform: translateY(-1000px);
+    }
+    100%{
+        transform: translateY(0px);
+    }
+}
+
+#spiner{
+    display: flex;
+    flex-direction: row;
+    gap: 8rem;
+  /* animation: spin 4s  ease-in-out forwards; */
+}
+#spinnerWrapper {
+  z-index: 100;
+  /* top: -100px; */
+  /* display: flex; */
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+/* 
+@keyframes spin {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-3500px); 
+    }
+  }
+   */
+
+.gray{
+    box-shadow: inset 0 -30px 18px -13px #CCCCCC;
+    border-bottom: 5px solid #e7e7e7;
+}
+.green{
+    box-shadow: inset 0 -30px 18px -13px green;
+    border-bottom: 5px solid rgb(41, 163, 41);
+}
+
+.blue{
+    box-shadow: inset 0 -30px 18px -13px rgb(0, 0, 177);
+    border-bottom: 5px solid rgb(42, 42, 255);
+}
+
+.purple{
+    box-shadow: inset 0 -30px 18px -13px #9C27B0;
+    border-bottom: 5px solid #ce35e9;
+}
+.gold{
+    box-shadow: inset 0 -30px 18px -13px #FF9800;
+    border-bottom: 5px solid #f3ab3f;
+}
+
+.spinnerIteam img{
+    width: 35%;
+    height: auto;
+}
+
+.pushable {
+    background: hsl(340deg 100% 32%);
+    border-radius: 12px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+}
+.front {
+    display: block;
+    padding: 12px 42px;
+    border-radius: 12px;
+    font-size: 1.25rem;
+    background: hsl(345deg 100% 47%);
+    color: white;
+    transform: translateY(-6px);
+}
+
+.pushable:active .front {
+    transform: translateY(-2px);
+}
+
+.buy p {
+    padding-bottom: 10px;
+}
+
+.buy{
+    display: flex;
+    flex-direction: column;
+}

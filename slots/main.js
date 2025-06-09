@@ -1,34 +1,35 @@
 const slotIteams = [
-    "<div class='slotIteam'>🍒</div>", "<div class='slotIteam'>🍒</div>", "<div class='slotIteam'>🍒</div>", "<div class='slotIteam'>🍒</div>",
-    "<div class='slotIteam'>🍋</div>", "<div class='slotIteam'>🍋</div>", "<div class='slotIteam'>🍋</div>",
-    "<div class='slotIteam'>🍑</div>", "<div class='slotIteam'>🍑</div>",
-    "<div class='slotIteam'>🍀</div>", "<div class='slotIteam'>🍀</div>",
-    "<div class='slotIteam'>🔔</div>",
+    "<div class='slotIteam'>🍒</div>", "<div class='slotIteam'>🍒</div>", "<div class='slotIteam'>🍒</div>", "<div class='slotIteam'>🍒</div>", "<div class='slotIteam'>🍒</div>", "<div class='slotIteam'>🍒</div>",
+    "<div class='slotIteam'>🍋</div>", "<div class='slotIteam'>🍋</div>", "<div class='slotIteam'>🍋</div>", "<div class='slotIteam'>🍋</div>", "<div class='slotIteam'>🍋</div>",
+    "<div class='slotIteam'>🍑</div>", "<div class='slotIteam'>🍑</div>", "<div class='slotIteam'>🍑</div>", "<div class='slotIteam'>🍑</div>",
+    "<div class='slotIteam'>🍀</div>", "<div class='slotIteam'>🍀</div>", "<div class='slotIteam'>🍀</div>",
+    "<div class='slotIteam'>🔔</div>", "<div class='slotIteam'>🔔</div>",
     "<div class='slotIteam'>💎</div>"
 ]
 
+const slider = document.getElementById('slider');
+const value = document.getElementById('value');
+var purseAmount = 0
 const slot1 = document.getElementById("1")
 const slot2 = document.getElementById("2")
 const slot3 = document.getElementById("3")
 let purse = document.getElementById("purse")
-let purseAmount = 10;
-purse.innerHTML = purseAmount;
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("purseAmount") === null) {
+        // localStorage.clear();
+        localStorage.setItem("purseAmount", 10);
+    }
+    purseAmount = localStorage.getItem("purseAmount");
+    purse.innerHTML = purseAmount;
+    console.log("purseAmount is:", purseAmount);
+});
+console.log(purseAmount)
 
 const playButton = document.getElementById('playButton');
+var betAmount = 1;
 
-  function handleButtonClick() {
-    if(purseAmount > 0){
-        playButton.disabled = true;
-        purseAmount -= 1
-        purse.innerHTML = purseAmount
-        play()
-        setTimeout(() => {
-          playButton.disabled = false;
-        }, 7000); 
-    }else{
-        alert('ur bad and out of points (refresh to play again)')
-    }
-  }
+
+ 
 
 playButton.addEventListener('click', handleButtonClick);
 
@@ -85,23 +86,27 @@ function play() {
     }, 7000);
 }
 
+var addedBetamount = 0;
 
 function gameBrain(fruit, bell, clover, dimond){
-    console.log(fruit,bell,clover, dimond)
+    console.log(fruit,bell,clover, dimond, betAmount)
     if(fruit === 3){
-        purseAmount += 10
+        addedBetamount = betAmount * 2
     }else if(bell === 3){
-        purseAmount += 50 
+        addedBetamount = betAmount * 10
     }else if(clover === 3){
-        purseAmount += 30
+        addedBetamount = betAmount * 50
     }else if(dimond === 3){
-        purseAmount += 100
+        addedBetamount = betAmount * 100
     }
-    purse.innerHTML = purseAmount;
+    purse.innerHTML = purseAmount + addedBetamount;
+    purseAmount += addedBetamount
+    addedBetamount = 0
     fruit = 0
     bell = 0
     clover = 0
     dimond = 0
+    localStorage.setItem("purseAmount", purseAmount)
 }
 
 
@@ -111,16 +116,44 @@ function getSlotIteams(list){
 }
 
 
+
+
+function handleButtonClick() {
+    betAmount = parseInt(slider.value) 
+    console.log(betAmount)
+    console.log(purseAmount)
+    if(purseAmount > 0 && betAmount <= purseAmount){
+        playButton.disabled = true;
+        purseAmount -= betAmount
+        localStorage.setItem("purseAmount", purseAmount)
+        purse.innerHTML = purseAmount
+        // localStorage.setItem("purseAmount", purseAmount)
+        play()
+        setTimeout(() => {
+          playButton.disabled = false;
+        }, 7000); 
+    }else if(purseAmount == 0){
+        localStorage.setItem("purseAmount", 10)
+        alert('ur bad and out of points (refresh to play again)')
+    }else if(betAmount > purseAmount){
+        alert('hey you bet too much try again for a value you can bet')
+    }else{
+        alert("someting is very wrong")
+    }
+  }
+
 const BuyEmail = document.getElementById("BuyEmail")
 
 function BuyBuyBuy(){
     if(purseAmount < 100){
         alert("Not Enough Maybe Try Harder!")
-    }else{
+    }else if(purseAmount >= 100){
         alert("Congrates! my Email is: bluestcalculatorest@gmail.com")
         purseAmount -= 100 
+        localStorage.setItem("purseAmount", purseAmount)
         purse.innerHTML = purseAmount
     }
 }
 
 BuyEmail.addEventListener('click', BuyBuyBuy);
+

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Do you want my Email?</title>
+    <title>Get My Email | Slots</title>
     <link rel="icon" href="../email32.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -22,13 +22,21 @@
     </div>
     <div class="bottomBar">
         <div class="pursecon">
-            <p>Coins</p><div id="purse"></div>
+            <p>Purse Balance</p><div id="purse"></div>
         </div> 
-        <button class="pushable" id="playButton">
-            <span class="front">
-              Play
-            </span>
-          </button>
+        <div class="play">
+            <div class="range-container">
+                <div>Bet Amount</div>
+                <input type="number" id="slider" min="1" max="100" value="1" step="1">
+                <!-- <div id="value">1</div> -->
+              </div>
+            <button class="pushable" id="playButton">
+                <span class="front">
+                    Play
+                </span>
+            </button>
+        </div>
+        
     </div>
 </div>
 <div class="lowerBar">
@@ -41,10 +49,10 @@
         </button>
     </div>
     <div class="scoring">
-        <div class='scoringIteam'>3x 💎: 100</div>
-        <div class='scoringIteam'>3x 🔔: 50</div>
-        <div class='scoringIteam'>3x 🍀: 30</div>
-        <div class='scoringIteam'>Any 3x 🍋🍑🍒: 10</div>
+        <div class='scoringIteam'>3x 💎: x100</div>
+        <div class='scoringIteam'>3x 🔔: x50</div>
+        <div class='scoringIteam'>3x 🍀: x10</div>
+        <div class='scoringIteam'>Any 3x 🍋🍑🍒: x2</div>
     </div>
     
 </div>

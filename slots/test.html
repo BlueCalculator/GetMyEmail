@@ -1,43 +1,199 @@
-<div class="slot-machine">
-  <div class="slot-items">
-    <div>🍒</div>
-    <div>🍋</div>
-    <div>🔔</div>
-    <div>🍀</div>
-    <div>🍒</div> <!-- repeat start for smooth loop -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Casino Plinko</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #0f0;
+      font-family: 'Courier New', Courier, monospace;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #0ff;
+      font-size: 32px;
+    }
+
+    #plinko-board {
+      position: relative;
+      width: 280px;
+      height: 400px;
+      margin: 0 auto;
+      border: 2px solid #0f0;
+      background-color: #111;
+      overflow: hidden;
+    }
+
+    .peg {
+      width: 8px;
+      height: 8px;
+      background-color: #0f0;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .ball {
+      width: 14px;
+      height: 14px;
+      background-color: #f00;
+      border-radius: 50%;
+      position: absolute;
+      z-index: 100;
+    }
+
+    .slot {
+      position: absolute;
+      bottom: 0;
+      width: 40px;
+      height: 50px;
+      text-align: center;
+      color: #fff;
+      font-size: 14px;
+      padding-top: 10px;
+      border-top: 2px solid #0ff;
+    }
+
+    input[type=number] {
+      padding: 5px;
+      font-size: 16px;
+      width: 100px;
+      margin: 10px;
+      background: #222;
+      color: #0f0;
+      border: 1px solid #0f0;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background: #0f0;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #6f6;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
+    .info {
+      margin: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎰 Casino Plinko</h1>
+
+  <div class="info">
+    Balance: <span id="balance">100</span> points<br>
+    Bet Amount: <input type="number" id="bet" value="10" min="1">
   </div>
-</div>
 
-<style>
-  .slot-machine {
-  width: 100px;
-  height: 100px;
-  overflow: hidden;
-  border: 2px solid black;
-  position: relative;
-}
+  <div id="plinko-board"></div>
 
-.slot-items {
-  display: flex;
-  flex-direction: column;
-  animation: spin 2s ease-in-out;
-}
+  <button onclick="dropBall()">Drop Ball</button>
 
-.slot-items div {
-  height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 2rem;
-}
+  <div id="message"></div>
 
-@keyframes spin {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-400px); /* Move up by total height of 4 items */
-  }
-}
+  <script>
+    const board = document.getElementById("plinko-board");
+    let balance = 100;
+    const slots = [0.5, 1, 2, 5, 2, 1, 0.5]; // multipliers
+    const pegRows = 7;
+    const pegs = [];
 
-</style>
+    function updateBalance() {
+      document.getElementById("balance").innerText = balance.toFixed(2);
+    }
+
+    function showMessage(msg) {
+      document.getElementById("message").innerText = msg;
+    }
+
+    function setupBoard() {
+      // Create pegs
+      for (let row = 0; row < pegRows; row++) {
+        const y = 50 + row * 40;
+        for (let col = 0; col <= row; col++) {
+          const x = 20 + (row % 2 === 0 ? 0 : 20) + col * 40;
+          const peg = document.createElement("div");
+          peg.className = "peg";
+          peg.style.left = `${x}px`;
+          peg.style.top = `${y}px`;
+          board.appendChild(peg);
+          pegs.push({ x, y });
+        }
+      }
+
+      // Create slots
+      for (let i = 0; i < slots.length; i++) {
+        const slot = document.createElement("div");
+        slot.className = "slot";
+        slot.style.left = `${i * 40}px`;
+        slot.innerText = `${slots[i]}x`;
+        board.appendChild(slot);
+      }
+    }
+
+    function dropBall() {
+      const bet = parseFloat(document.getElementById("bet").value);
+      if (isNaN(bet) || bet <= 0) {
+        showMessage("Enter a valid bet amount.");
+        return;
+      }
+      if (bet > balance) {
+        showMessage("Not enough points.");
+        return;
+      }
+
+      balance -= bet;
+      updateBalance();
+      showMessage("Dropping...");
+
+      let ball = document.createElement("div");
+      ball.className = "ball";
+      board.appendChild(ball);
+
+      let x = 140; // center start
+      let y = 0;
+      let bounces = 0;
+
+      const interval = setInterval(() => {
+        if (bounces < pegRows) {
+          y += 40;
+          x += Math.random() < 0.5 ? -20 : 20;
+          x = Math.max(0, Math.min(240, x)); // board width constraint
+          ball.style.top = y + "px";
+          ball.style.left = x + "px";
+          bounces++;
+        } else {
+          clearInterval(interval);
+          const slotIndex = Math.round(x / 40);
+          const multiplier = slots[slotIndex];
+          const winnings = bet * multiplier;
+          balance += winnings;
+          updateBalance();
+          showMessage(`Ball landed in ${multiplier}x slot. You won ${winnings.toFixed(2)} points!`);
+          setTimeout(() => board.removeChild(ball), 2000);
+        }
+      }, 200);
+    }
+
+    // Setup once
+    setupBoard();
+    updateBalance();
+  </script>
+
+</body>
+</html>
