@@ -1,3 +1,7 @@
+*{
+    overflow-y: hidden;
+}
+
 .option{
     display: flex;
     align-items: center;
@@ -8,7 +12,7 @@
 }
 
 .option p {
-    font-size: 4rem;
+    font-size: 5vw;
 }
 
 .optionoption{
@@ -20,13 +24,14 @@
 
 .optionoption a{
     color: black;
-    font-size: 3rem;
+    font-size: 2vw;
     text-decoration: none;
     border: 1px solid black;
     padding: 1rem;
     border-radius: .5rem;
+    transition: 1s;
 }
 
 .optionoption a:hover{
-    color: rgba(0, 0, 0, 0.747);
+    background-color: rgba(0, 0, 0, 0.178);
 }

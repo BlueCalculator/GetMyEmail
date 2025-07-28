@@ -1,29 +1,101 @@
-const canvas = document.getElementById("plinkoCanvas");
-const purse = document.getElementById("purse");
-const bet = document.getElementById("betAmount");
+const $ = (id) => document.getElementById(id);
+
+const canvas = $("plinkoCanvas");
+const purse = $("purse");
+const bet = $("betAmount");
+const half = $("half")
+const double = $("double")
+const betButton = $("placeBet")
+const manual = $("manual")
+const automatic = $("automatic")
+const resentWins = $("resentWins");
+
+
+canvas.width = window.innerWidth * 0.65; 
+canvas.height = window.innerWidth * 0.65;
 
 const ctx = canvas.getContext("2d");
-const GRAVITY = 0.05;
-const FRICTION = 0.99;
+const gravity = 0.05;
+const friction = 0.99;
 const pegs = [];
 const balls = [];
+const winHistory = [];
 const pegRadius = 5;
 const ballRadius = 10;
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
-const BIN_COUNT = 17;
-const BIN_WIDTH = 50;
+const binWidth = 40;
 const floorHeight = 30; // Define floor height here
+const binMargin = 10; // how far up the bins are from bottom
 
-let purseAmount = 10;
-purse.textContent = purseAmount;
+let acceptingBets = true
 
 // Initialize betAmount from input value on load
 let betAmount = parseFloat(bet.value) || 0;
 
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("purseAmount") === null) {
+        // localStorage.clear();
+        localStorage.setItem("purseAmount", 10);
+    }
+    purseAmount = localStorage.getItem("purseAmount");
+    purse.innerHTML = purseAmount;
+    console.log("purseAmount is:", purseAmount);
+});
+
+
+betButton.addEventListener("click", () => {
+  if(acceptingBets == true){
+    autoBall(false)
+  }
+  else{
+    return
+  }
+})
+
+half.addEventListener("click", () => {
+  betAmount = betAmount / 2
+  bet.value = betAmount
+})
+
+double.addEventListener("click", () => {
+  betAmount = betAmount *2
+  bet.value = betAmount
+})
+
+manual.addEventListener("click", () => {
+  acceptingBets = true
+  betButton.classList.remove("deactive")
+  betButton.classList.add("betActive")
+  manual.classList.remove("unactive")
+  manual.classList.add("active")
+  automatic.classList.remove("active")
+  automatic.classList.add("unactive")
+  autoBall(false)
+})
+
+automatic.addEventListener("click", () => {
+  acceptingBets = false
+  betButton.classList.add("deactive")
+  betButton.classList.remove("betActive")
+  manual.classList.remove("active")
+  manual.classList.add("unactive")
+  automatic.classList.remove("unactive")
+  automatic.classList.add("active")
+  autoBall(true)
+})
+
 bet.addEventListener("change", () => {
   betAmount = parseFloat(bet.value) || 0;
   console.log("Bet amount changed to:", betAmount);
+  purseAmount = purse.innerHTML;
+  if(betAmount > purseAmount){
+    betButton.classList.add("deactive")
+    betButton.classList.remove("betActive")
+  }else{
+    betButton.classList.remove("deactive")
+    betButton.classList.add("betActive")
+  }
 });
 
 // Helper to round to two decimals
@@ -32,25 +104,22 @@ function roundToTwo(num) {
 }
 
 const bins = [
-  { x: 0 * BIN_WIDTH, name: "110x", color: "#ff4444" },
-  { x: 1 * BIN_WIDTH, name: "41x", color: "#44ff44" },
-  { x: 2 * BIN_WIDTH, name: "10x", color: "#4444ff" },
-  { x: 3 * BIN_WIDTH, name: "5x", color: "#ffff44" },
-  { x: 4 * BIN_WIDTH, name: "3x", color: "#ff44ff" },
-  { x: 5 * BIN_WIDTH, name: "1.5x", color: "#44ffff" },
-  { x: 6 * BIN_WIDTH, name: "1x", color: "#ff9944" },
-  { x: 7 * BIN_WIDTH, name: "0.5x", color: "#99ff44" },
-  { x: 8 * BIN_WIDTH, name: "0.3x", color: "#4499ff" },
-  { x: 9 * BIN_WIDTH, name: "0.5x", color: "#ff4499" },
-  { x: 10 * BIN_WIDTH, name: "1x", color: "#44ff99" },
-  { x: 11 * BIN_WIDTH, name: "1.5x", color: "#9944ff" },
-  { x: 12 * BIN_WIDTH, name: "3x", color: "#ff6699" },
-  { x: 13 * BIN_WIDTH, name: "5x", color: "#66ff99" },
-  { x: 14 * BIN_WIDTH, name: "10x", color: "#9966ff" },
-  { x: 15 * BIN_WIDTH, name: "41x", color: "#ff9966" },
-  { x: 16 * BIN_WIDTH, name: "110x", color: "#66ff66" },
-  { x: 17 * BIN_WIDTH, name: "", color: "#6666ff" }, // Right edge wall only
+  { x: 0 * binWidth, name: "10x",  color: "#440000", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 1 * binWidth, name: "5x",   color: "#661111", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 2 * binWidth, name: "3x",   color: "#882222", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 3 * binWidth, name: "1.5x", color: "#aa3333", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 4 * binWidth, name: "1x",   color: "#cc4444", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 5 * binWidth, name: "0.5x", color: "#ee5555", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 6 * binWidth, name: "0.2x", color: "#ff6969", wiggleUntil: 0, wiggleStart: 0 },  
+  { x: 7 * binWidth, name: "0.5x", color: "#ee5555", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 8 * binWidth, name: "1x",   color: "#cc4444", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 9 * binWidth, name: "1.5x", color: "#aa3333", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 10 * binWidth, name: "3x",  color: "#882222", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 11 * binWidth, name: "5x",  color: "#661111", wiggleUntil: 0, wiggleStart: 0 },
+  { x: 12 * binWidth, name: "10x", color: "#440000", wiggleUntil: 0, wiggleStart: 0 }   
 ];
+
+
 
 // Create pegs in triangle shape
 const totalRows = 12;
@@ -70,13 +139,25 @@ for (let row = 1; row < totalRows; row++) {
 }
 
 function spawnBall() {
-  // Prevent spawning if bet is zero or purse insufficient
-  if (betAmount <= 0) return;
-
+  if (betAmount <= 0){
+    return
+  }
+  // Prevent spawning if purse insufficient
   let currentPurse = parseFloat(purse.textContent);
-  if (currentPurse < betAmount) return;
+  
+  if (currentPurse < betAmount){
+    alert("Too Poor for Bet Amount")
+    return
+  }else if(currentPurse == 0){
+    localStorage.setItem("purseAmount", 10)
+    alert('ur bad and out of points (refresh to play again)')
+  };
 
-  purse.textContent = roundToTwo(currentPurse - betAmount);
+  purseAmount = roundToTwo(currentPurse - betAmount);
+
+  purse.textContent = purseAmount
+
+  localStorage.setItem("purseAmount", purseAmount)
 
   balls.push({
     x: canvasWidth / 2 + (Math.random() - 0.5) * 50,
@@ -88,18 +169,35 @@ function spawnBall() {
 }
 
 function update() {
-  for (let ball of balls) {
-    ball.vy += GRAVITY;
-    ball.vx *= FRICTION;
-    ball.vy *= FRICTION;
+  const now = performance.now();
 
-    // Wall collision
-    if (ball.x < ballRadius || ball.x > canvasWidth - ballRadius) {
-      ball.vx *= -1;
-      ball.x = Math.max(ballRadius, Math.min(canvasWidth - ballRadius, ball.x));
+  for (let i = balls.length - 1; i >= 0; i--) {
+    const ball = balls[i];
+
+    if (ball.landed) {
+      // Remove ball 1 second after landing
+        if (now - ball.landedTime > 10) {
+          balls.splice(i, 1);
+      }
+      // Skip physics updates for landed balls
+      continue;
     }
 
-    // Peg collision with center bias
+    // Apply gravity and friction
+    ball.vy += gravity;
+    ball.vx *= friction;
+    ball.vy *= friction;
+
+    // Wall collision (bounce left/right)
+    if (ball.x < ballRadius) {
+      ball.vx = Math.abs(ball.vx);
+      ball.x = ballRadius;
+    } else if (ball.x > canvasWidth - ballRadius) {
+      ball.vx = -Math.abs(ball.vx);
+      ball.x = canvasWidth - ballRadius;
+    }
+
+    // Peg collision with bias towards center
     for (let peg of pegs) {
       const dx = ball.x - peg.x;
       const dy = ball.y - peg.y;
@@ -113,7 +211,7 @@ function update() {
         ball.vx += (targetX - ball.x) * 0.2;
         ball.vy += (targetY - ball.y) * 0.2;
 
-        const biasStrength = 0.006;
+        const biasStrength = 0.0035;
         const dxToCenter = centerX - ball.x;
         ball.vx += dxToCenter * biasStrength;
       }
@@ -124,28 +222,56 @@ function update() {
     ball.y += ball.vy;
 
     // Floor collision and scoring
-    if (ball.y > canvasHeight - ballRadius) {
+    if (ball.y > canvasHeight - floorHeight - binMargin - ballRadius + 5) {
       ball.vy = 0;
       ball.vx = 0;
       ball.y = canvasHeight - ballRadius;
 
       if (!ball.landed) {
         ball.landed = true;
+        ball.landedTime = now;
 
-        for (let i = 0; i < bins.length - 1; i++) {
-          const binLeft = bins[i].x;
-          const binRight = bins[i + 1].x;
+        // Calculate bins positions & check which bin ball landed in
+        const binGap = 5;
+        const totalBins = bins.length;
+        const totalGaps = totalBins - 1;
+        const totalWidth = totalBins * binWidth + totalGaps * binGap;
+        const startX = (canvasWidth - totalWidth) / 2;
+
+        for (let j = 0; j < bins.length; j++) {
+          const binLeft = startX + j * (binWidth + binGap);
+          const binRight = binLeft + binWidth;
 
           if (ball.x >= binLeft && ball.x < binRight) {
-            console.log(`Ball landed in bin ${bins[i].name}`);
+            console.log(`Ball landed in bin ${bins[j].name}`);
 
-            let multAmount = parseFloat(bins[i].name.slice(0, -1)); // Remove trailing 'x'
+            let multAmount = parseFloat(bins[j].name.slice(0, -1)); // Remove trailing 'x'
             let newAmount = roundToTwo(betAmount * multAmount);
 
             let currentPurse = parseFloat(purse.textContent);
             purse.textContent = roundToTwo(currentPurse + newAmount);
 
+            localStorage.setItem("purseAmount", purse.textContent)
+
+            bins[j].wiggleStart = now;
+            bins[j].wiggleUntil = now + 400; // wiggle for 400ms
+
             console.log("Winnings added:", newAmount);
+
+            winHistory.unshift({ name: bins[j].name, color: bins[j].color });
+            if (winHistory.length > 3) {
+              winHistory.pop(); 
+            }
+        
+            resentWins.innerHTML = "";
+            for (const win of winHistory) {
+              const entry = document.createElement("div");
+              entry.textContent = win.name;
+              entry.style.backgroundColor = win.color
+              entry.className = "win-entry"; // optional style class
+              resentWins.appendChild(entry);
+            }
+
             break;
           }
         }
@@ -153,6 +279,8 @@ function update() {
     }
   }
 }
+
+
 
 function draw() {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -165,18 +293,40 @@ function draw() {
     ctx.fill();
   }
 
-  // Draw bins
-  for (let i = 0; i < bins.length - 1; i++) {
-    const bin = bins[i];
-    ctx.fillStyle = bin.color;
-    ctx.fillRect(bin.x, canvasHeight - floorHeight, BIN_WIDTH, floorHeight);
+  const binGap = 5; // adjust this for wider/narrower spacing
+  const totalBins = bins.length;
+  const totalGaps = totalBins - 1;
+  const totalWidth = totalBins * binWidth + totalGaps * binGap;
+  const startX = (canvasWidth - totalWidth) / 2;
 
+  // Draw bins
+
+  for (let i = 0; i < bins.length; i++) {
+    const bin = bins[i];
+    const x = startX + i * (binWidth + binGap);
+  
+    const now = performance.now();
+    let yOffset = -1;
+  
+    if (bin.wiggleUntil > now) {
+      const progress = (now - bin.wiggleStart) / (bin.wiggleUntil - bin.wiggleStart);
+      const wiggleFreq = 1; // wiggles per second
+      const wiggleAmp = 6;  // max pixels to move up/down
+      yOffset = Math.sin(progress * wiggleFreq * 2 * Math.PI) * wiggleAmp;
+    }
+  
+    ctx.fillStyle = bin.color;
+    ctx.fillRect(x, canvasHeight - floorHeight - binMargin + yOffset, binWidth, floorHeight);
+  
     ctx.fillStyle = shadeColor(bin.color, -40);
     ctx.font = "16px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(bin.name, bin.x + BIN_WIDTH / 2, canvasHeight - floorHeight / 2);
+    ctx.fillText(bin.name, x + binWidth / 2, canvasHeight - floorHeight / 2 - binMargin + yOffset);
   }
+
+
+
 
   // Draw balls
   ctx.fillStyle = "#f44";
@@ -207,5 +357,20 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-setInterval(spawnBall, 1000);
+let autoInterval = null
+
+function autoBall(auto) {
+  if (auto === true) {
+    if (!autoInterval) {
+      autoInterval = setInterval(spawnBall, 1000);
+    }
+  } else {
+    if (autoInterval) {
+      clearInterval(autoInterval);
+      autoInterval = null;
+    }
+    spawnBall();
+  }
+}
+
 loop();
